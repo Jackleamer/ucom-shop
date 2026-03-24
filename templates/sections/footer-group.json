@@ -1,0 +1,69 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "text_7nNCbL": {
+          "type": "text",
+          "settings": {
+            "heading": "UCOM Telecom Pty Ltd",
+            "subtext": "<p><strong>Head Office</strong></p><p>Level 2, 2-6<strong> </strong>Glenferrie Rd, Malvern VIC 3144</p><p><strong>Sales</strong></p><p>Level 4, 150 Albert Rd, South Melbourne VIC 3205</p><p><strong>Ph: </strong>1800 00 UCOM</p><p><strong>International: </strong>+61 39069 9998</p><p><a href=\"mailto:support@ucom.com.au\" target=\"_blank\" title=\"mailto:support@ucom.com.au\">support@ucom.com.au</a></p>",
+            "width_desktop": 3,
+            "width_mobile": "2"
+          }
+        },
+        "1c647602-cc00-4009-a058-976435c8ee9e": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Customer Care",
+            "menu": "footer",
+            "width_desktop": 4,
+            "width_mobile": "2"
+          }
+        },
+        "link_list_QhVAjX": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Our Brands",
+            "menu": "our-brands",
+            "width_desktop": 3,
+            "width_mobile": "2"
+          }
+        }
+      },
+      "block_order": [
+        "text_7nNCbL",
+        "1c647602-cc00-4009-a058-976435c8ee9e",
+        "link_list_QhVAjX"
+      ],
+      "settings": {
+        "color_scheme": "accent-2",
+        "enable_follow_on_shop": false,
+        "show_social": true,
+        "enable_country_selector": false,
+        "enable_language_selector": true,
+        "payment_enable": true,
+        "enabled_payment_types": "",
+        "show_policy": false,
+        "branding_text": "| All Rights Reserved",
+        "margin_top": 0,
+        "padding_top": 32,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}
