@@ -1,0 +1,471 @@
+{% comment %}
+  AC Power Adapter upsell modal for IP Desk Phones.
+
+  Intercepts the "Add to Cart" form submit on any product in the
+  ip-desk-phones collection, asks whether the customer needs a power
+  adapter, then adds the correct items and redirects to /cart.
+
+  Adapter SKU mapping:
+    Default  → IPY-SIPPWR5V2A
+    T88      → IPY-SIPPWR-T88
+    MP58-WH  → IPY-CP920-PSU
+    T31G     → IPY-SIPPWR5V6A
+
+  Requires global Shopify objects: product, section
+  (product_form_id is derived from section.id inside this snippet)
+{% endcomment %}
+
+{%- liquid
+  assign is_ip_desk_phone = false
+  for col in product.collections
+    if col.handle == 'ip-desk-phones'
+      assign is_ip_desk_phone = true
+      break
+    endif
+  endfor
+
+  assign adapter_sku = 'IPY-SIPPWR5V2A'
+  assign _handle = product.handle | downcase
+  assign _title  = product.title  | upcase
+
+  if _handle contains 't88' or _title contains 'T88'
+    assign adapter_sku = 'IPY-SIPPWR-T88'
+  elsif _handle contains 'mp58-wh' or _title contains 'MP58-WH'
+    assign adapter_sku = 'IPY-CP920-PSU'
+  elsif _handle contains 't31g' or _title contains 'T31G'
+    assign adapter_sku = 'IPY-SIPPWR5V6A'
+  endif
+-%}
+
+{% if is_ip_desk_phone %}
+
+<style>
+  /* ── AC Adapter Modal ─────────────────────────────────── */
+  .ac-adapter-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .ac-adapter-overlay.is-open {
+    display: flex;
+  }
+
+  .ac-adapter-modal {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem 2rem 1.75rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    animation: acModalIn 0.2s ease-out;
+  }
+  @keyframes acModalIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)     scale(1); }
+  }
+
+  .ac-adapter-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #6b7280;
+    line-height: 0;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+  .ac-adapter-modal__close:hover { color: #111; }
+  .ac-adapter-modal__close svg { width: 20px; height: 20px; }
+
+  .ac-adapter-modal__icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .ac-adapter-modal__icon svg {
+    width: 48px;
+    height: 48px;
+    color: #f59e0b;
+  }
+
+  .ac-adapter-modal__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 0.75rem;
+    color: #111827;
+  }
+
+  .ac-adapter-modal__message {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-align: center;
+    color: #374151;
+    margin: 0 0 1.5rem;
+  }
+
+  .ac-adapter-modal__error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: #b91c1c;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .ac-adapter-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .ac-adapter-modal__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8125rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+    line-height: 1;
+  }
+  .ac-adapter-modal__btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .ac-adapter-modal__btn--primary {
+    background: #111827;
+    color: #fff;
+  }
+  .ac-adapter-modal__btn--primary:hover:not(:disabled) {
+    background: #1f2937;
+  }
+
+  .ac-adapter-modal__btn--secondary {
+    background: #fff;
+    color: #374151;
+    border-color: #d1d5db;
+  }
+  .ac-adapter-modal__btn--secondary:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+
+  /* Spinner */
+  .ac-adapter-modal__spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: acSpin 0.65s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes acSpin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<div
+  id="ac-adapter-overlay"
+  class="ac-adapter-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="ac-adapter-title"
+  aria-hidden="true"
+>
+  <div class="ac-adapter-modal" id="ac-adapter-modal">
+
+    <button
+      type="button"
+      class="ac-adapter-modal__close"
+      id="ac-adapter-close"
+      aria-label="Close"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="ac-adapter-modal__icon">
+      <!-- Power / plug icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V12"/>
+        <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+        <rect x="8" y="2" width="8" height="7" rx="1"/>
+        <path d="M10 2V1M14 2V1"/>
+      </svg>
+    </div>
+
+    <h2 class="ac-adapter-modal__title" id="ac-adapter-title">
+      AC Power Adapter Required
+    </h2>
+
+    <p class="ac-adapter-modal__message">
+      This IP phone requires an AC Power Adapter to operate.
+      <strong>Do you need to add one to your order?</strong>
+    </p>
+
+    <div class="ac-adapter-modal__error" id="ac-adapter-error" hidden></div>
+
+    <div class="ac-adapter-modal__actions">
+      <button
+        type="button"
+        class="ac-adapter-modal__btn ac-adapter-modal__btn--primary"
+        id="ac-adapter-yes"
+      >
+        <span class="ac-adapter-modal__spinner" id="ac-adapter-yes-spinner" hidden></span>
+        <span id="ac-adapter-yes-text">Yes, Add Power Adapter</span>
+      </button>
+
+      <button
+        type="button"
+        class="ac-adapter-modal__btn ac-adapter-modal__btn--secondary"
+        id="ac-adapter-no"
+      >
+        <span class="ac-adapter-modal__spinner" id="ac-adapter-no-spinner" hidden></span>
+        <span id="ac-adapter-no-text">No, I Already Have One</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var ADAPTER_SKU = {{ adapter_sku | json }};
+  var FORM_ID     = 'product-form-{{ section.id }}';
+
+  /* ── DOM refs (lazily resolved after DOMContentLoaded) ── */
+  var overlay, yesBtn, noBtn, errorBox, yesSpinner, noSpinner, yesText, noText;
+
+  /* ── Lifecycle ────────────────────────────────────────── */
+
+  function init() {
+    overlay    = document.getElementById('ac-adapter-overlay');
+    yesBtn     = document.getElementById('ac-adapter-yes');
+    noBtn      = document.getElementById('ac-adapter-no');
+    errorBox   = document.getElementById('ac-adapter-error');
+    yesSpinner = document.getElementById('ac-adapter-yes-spinner');
+    noSpinner  = document.getElementById('ac-adapter-no-spinner');
+    yesText    = document.getElementById('ac-adapter-yes-text');
+    noText     = document.getElementById('ac-adapter-no-text');
+
+    var form = document.getElementById(FORM_ID);
+    if (!form) return;
+
+    /*
+     * Intercept form submit in capture phase so we fire before the
+     * theme's product-form custom element submit handler.
+     */
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openModal();
+    }, true /* capture */);
+
+    /* Modal control */
+    document.getElementById('ac-adapter-close').addEventListener('click', closeModal);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+    });
+
+    yesBtn.addEventListener('click', handleYes);
+    noBtn.addEventListener('click',  handleNo);
+  }
+
+  /* ── Modal open/close ─────────────────────────────────── */
+
+  function openModal() {
+    resetState();
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    yesBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    resetState();
+  }
+
+  function resetState() {
+    hideError();
+    setLoading(false);
+  }
+
+  /* ── Cart helpers ─────────────────────────────────────── */
+
+  /**
+   * Returns the items array representing the phone currently selected
+   * in the product form (variant id + quantity + any line item properties).
+   */
+  function getPhoneItems() {
+    var form = document.getElementById(FORM_ID);
+    var variantId = parseInt(form.querySelector('input[name="id"]').value, 10);
+
+    var quantityEl = form.querySelector('input[name="quantity"]')
+                  || form.querySelector('[data-quantity-input]')
+                  || form.querySelector('.quantity__input');
+    var quantity = quantityEl ? (parseInt(quantityEl.value, 10) || 1) : 1;
+
+    var item = { id: variantId, quantity: quantity };
+
+    /* Preserve any line item property inputs */
+    var propInputs = form.querySelectorAll('[name^="properties"]');
+    if (propInputs.length > 0) {
+      item.properties = {};
+      propInputs.forEach(function (el) {
+        var match = el.name.match(/\[(.+?)\]/);
+        if (match) item.properties[match[1]] = el.value;
+      });
+    }
+
+    return [item];
+  }
+
+  /**
+   * Searches the storefront for a variant whose SKU matches `sku`.
+   * Returns { id, available } or null.
+   */
+  function findVariantBySku(sku) {
+    return fetch(
+      '/search/suggest.json?q=' + encodeURIComponent(sku) +
+      '&resources[type]=product&resources[limit]=10'
+    )
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var products = (data.resources && data.resources.results && data.resources.results.products) || [];
+      /* Iterate and fetch each product's full JSON to match on SKU */
+      return products.reduce(function (chain, p) {
+        return chain.then(function (found) {
+          if (found) return found; /* already found, skip */
+          var match = p.url.match(/\/products\/([^?/]+)/);
+          if (!match) return null;
+          return fetch('/products/' + match[1] + '.js')
+            .then(function (r) { return r.json(); })
+            .then(function (product) {
+              var variant = (product.variants || []).find(function (v) {
+                return v.sku === sku;
+              });
+              return variant ? { id: variant.id, available: variant.available, title: product.title } : null;
+            });
+        });
+      }, Promise.resolve(null));
+    });
+  }
+
+  /** POST to /cart/add.js then navigate to /cart */
+  function addToCartAndRedirect(items) {
+    return fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items: items })
+    })
+    .then(function (r) {
+      if (!r.ok) {
+        return r.json().then(function (err) {
+          throw new Error(err.description || 'Could not add to cart. Please try again.');
+        });
+      }
+      window.location.href = '/cart';
+    });
+  }
+
+  /* ── Button handlers ──────────────────────────────────── */
+
+  function handleYes() {
+    setLoading(true, 'yes');
+    hideError();
+
+    var phoneItems = getPhoneItems();
+
+    findVariantBySku(ADAPTER_SKU)
+      .then(function (adapter) {
+        if (!adapter) {
+          throw new Error(
+            'Power adapter (SKU: ' + ADAPTER_SKU + ') was not found in the store. ' +
+            'Please add it manually or contact us.'
+          );
+        }
+        if (!adapter.available) {
+          throw new Error(
+            'The required power adapter is currently out of stock. ' +
+            'Please contact us for assistance.'
+          );
+        }
+        var items = phoneItems.concat([{ id: adapter.id, quantity: 1 }]);
+        return addToCartAndRedirect(items);
+      })
+      .catch(function (err) {
+        setLoading(false);
+        showError(err.message);
+      });
+  }
+
+  function handleNo() {
+    setLoading(true, 'no');
+    hideError();
+
+    addToCartAndRedirect(getPhoneItems())
+      .catch(function (err) {
+        setLoading(false);
+        showError(err.message);
+      });
+  }
+
+  /* ── UI helpers ───────────────────────────────────────── */
+
+  function setLoading(loading, which) {
+    yesBtn.disabled = loading;
+    noBtn.disabled  = loading;
+
+    yesSpinner.hidden = !(loading && which === 'yes');
+    noSpinner.hidden  = !(loading && which === 'no');
+  }
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.hidden = false;
+  }
+
+  function hideError() {
+    errorBox.hidden = true;
+    errorBox.textContent = '';
+  }
+
+  /* ── Bootstrap ────────────────────────────────────────── */
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+{% endif %}

@@ -1,0 +1,569 @@
+{% comment %}
+  ============================================================
+  UCOM DPP Collection Section
+  ============================================================
+  File: sections/dpp-collection.liquid
+  
+  SETUP:
+  1. Add this file under Sections in your theme editor
+  2. Create templates/collection.dpp.json (separate file)
+  3. Create a collection called "Device Payment Program"
+  4. Assign the "dpp" template to that collection
+  5. Tag products: dpp-desk-phone, dpp-cordless, dpp-headset, dpp-accessory, dpp-router
+  6. Update FORM_URL below with your enquiry form link
+  7. Set collection to hidden (uncheck from nav/sitemap)
+  
+  URL: ucom.shop/collections/device-payment-program
+  ============================================================
+{% endcomment %}
+
+{% assign FORM_URL = "#enquire" %}
+
+<style>
+  /* Reset collection defaults from Shrine Pro */
+  .dpp-wrapper .collection-header,
+  .dpp-wrapper .collection__title,
+  .dpp-wrapper .collection__description,
+  .dpp-wrapper .collection__sort,
+  .dpp-wrapper .collection__filter { display: none !important; }
+
+  /* Hide announcement bar on DPP page */
+  .announcement-bar { display: none !important; }
+
+  /* Title case on all headings, titles, buttons, labels */
+  .dpp-wrapper h1,
+  .dpp-wrapper h2,
+  .dpp-wrapper h3,
+  .dpp-wrapper h4,
+  .dpp-card-title,
+  .dpp-hero-feature,
+  .dpp-info-text h4,
+  .dpp-btn-enquire,
+  .dpp-cta-btn,
+  .dpp-cta-banner h3,
+  .dpp-tab { text-transform: capitalize; }
+
+  .dpp-hero{background:linear-gradient(251deg, #0098DA 2.91%, #1172B5 11.36%, #1D579B 19.26%, #284083 30.93%, #2D3478 41.62%, #312C70 49.73%, #412973 62.45%, #512575 74.57%, #662178 84.23%, #821B7D 91.8%, #B11184 96.89%, #E1068B 99.46%);color:#fff;padding:70px 40px;text-align:center;position:relative;overflow:hidden}
+  .dpp-hero-badge{display:inline-block;background:rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.25)}
+  .dpp-hero h1{font-size:38px;font-weight:800;margin:0 0 12px;color:#fff;line-height:1.2}
+  .dpp-hero p{font-size:16px;color:rgba(255,255,255,0.85);max-width:600px;margin:0 auto 24px;line-height:1.6}
+  .dpp-hero-features{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:28px}
+  .dpp-hero-feature{display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(255,255,255,0.95)}
+  .dpp-hero-feature .check{display:inline-flex;align-items:center}
+  .dpp-hero-feature .check img{width:16px;height:16px}
+
+  .dpp-tabs{display:flex;justify-content:center;gap:8px;margin:32px auto 0;max-width:500px;padding:0 20px}
+  .dpp-tab{flex:1;padding:14px 24px;border:2px solid #e0e0e0;border-radius:10px;background:#fff;font-size:15px;font-weight:700;color:#888;text-align:center;cursor:pointer;transition:all .2s ease}
+  .dpp-tab.active{border-color:#2A1B5E;color:#1C1145;background:#EDEAFC}
+  .dpp-tab:hover:not(.active){border-color:#c8c0e0;color:#5C4BA3}
+
+  .dpp-tab-content{display:none}
+  .dpp-tab-content.active{display:block}
+
+  .dpp-info-bar{background:#f8f8fa;border:1px solid #ececf0;border-radius:12px;padding:28px 32px;margin:32px auto 0;max-width:1200px;display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+  .dpp-info-item{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:200px}
+  .dpp-info-icon{width:40px;height:40px;background:#e25aab;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:16px}
+  .dpp-info-text h4{font-size:14px;font-weight:700;color:#1C1145;margin:0 0 2px}
+  .dpp-info-text p{font-size:12px;color:#888;margin:0;line-height:1.4}
+
+  .dpp-section-header{text-align:center;margin:48px 0 24px;padding:0 20px}
+  .dpp-section-header h2{font-size:24px;font-weight:700;color:#1C1145;margin:0 0 6px}
+  .dpp-section-header h2::after{content:'';display:block;width:40px;height:3px;background:linear-gradient(90deg,rgba(226,90,171,1),rgba(49,44,112,1),rgba(0,152,218,1));margin:8px auto 0;border-radius:2px}
+  .dpp-section-header p{font-size:14px;color:#888;margin:0}
+
+  .dpp-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;padding:0 40px;max-width:1550px;margin:0 auto}
+
+  .dpp-card{background:#fff;border:1px solid #e8e8ec;border-radius:12px;overflow:hidden;transition:box-shadow .2s ease,transform .2s ease;display:flex;flex-direction:column;width:305px;flex-shrink:0}
+  .dpp-card:hover{box-shadow:0 4px 24px rgba(28,17,69,.1);transform:translateY(-2px);border-color:#c8c0e0}
+  .dpp-card-img{background:#fff;padding:20px;display:flex;justify-content:center;align-items:center;min-height:200px}
+  .dpp-card-img img{max-height:170px;max-width:100%;object-fit:contain}
+  .dpp-card-body{padding:16px;flex:1;display:flex;flex-direction:column}
+  .dpp-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+  .dpp-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:4px;color:#5C4BA3;background:#EDEAFC}
+  .dpp-card-title{font-size:16px;font-weight:700;color:#1C1145;margin:0 0 4px;line-height:1.3}
+  .dpp-card-desc{font-size:12px;color:#888;margin:0 0 12px;line-height:1.5}
+  .dpp-card-price{margin-top:auto;padding-top:12px;border-top:1px solid #f0f0f0}
+  .dpp-card-monthly{font-size:22px;font-weight:800;color:#1C1145;margin:0 0 2px}
+  .dpp-card-monthly span{font-size:13px;font-weight:500;color:#888}
+  .dpp-card-total{font-size:12px;color:#aaa;margin:0 0 12px}
+  .dpp-btn-enquire{display:flex;width:100%;justify-content:center;align-items:center;padding:0 3rem;min-height:4.5rem;background:#312c70;color:#fff;font-family:Poppins,sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:0.1rem;text-align:center;text-decoration:none;border:none;border-radius:8px;cursor:pointer;transition:all .2s ease}
+  .dpp-btn-enquire:hover{opacity:.9;transform:translateY(-1px)}
+
+  .dpp-cta-banner{background:radial-gradient(95% 100.98% at 20.27% 21.33%, rgba(0, 0, 59, 0.00) 27.01%, rgba(19, 17, 80, 0.39) 54.18%, #0098DA 100%), #00003B;color:#fff;text-align:center;padding:44px;margin:48px auto;border-radius:12px;max-width:1120px;position:relative;overflow:hidden}
+  .dpp-cta-banner h3{font-size:22px;font-weight:700;margin:0 0 8px;color:#fff}
+  .dpp-cta-banner p{font-size:14px;color:rgba(255,255,255,.7);margin:0 0 20px}
+  .dpp-cta-btn{display:inline-flex;align-items:center;gap:10px;padding:0 3rem;min-height:4.5rem;background:transparent;color:#fff;font-family:Poppins,sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:0.1rem;text-decoration:none;border-radius:8px;border:2px solid rgba(255,255,255,0.5);transition:all .3s ease;line-height:calc(1 + 0.2)}
+  .dpp-cta-btn .arrow{display:inline-flex;align-items:center;justify-content:center;width:0;opacity:0;overflow:hidden;transition:all .3s ease}
+  .dpp-cta-btn:hover{border-color:#fff;background:rgba(255,255,255,0.08)}
+  .dpp-cta-btn:hover .arrow{width:32px;opacity:1}
+  .dpp-terms{text-align:center;margin:0 0 48px;font-size:12px;color:#aaa}
+  .dpp-terms a{color:#2A1B5E;text-decoration:underline}
+
+  /* FAQ */
+  .dpp-faq{max-width:900px;margin:0 auto;padding:0 40px 48px}
+  .dpp-faq-header{text-align:center;margin-bottom:32px}
+  .dpp-faq-header h2{font-size:24px;font-weight:700;color:#312C70;margin:0 0 6px}
+  .dpp-faq-header h2::after{content:'';display:block;width:40px;height:3px;background:linear-gradient(90deg,rgba(226,90,171,1),rgba(49,44,112,1),rgba(0,152,218,1));margin:8px auto 0;border-radius:2px}
+  .dpp-faq-header p{font-size:14px;color:#888;margin:0}
+  .dpp-faq-item{border-bottom:1px solid #ececf0}
+  .dpp-faq-item:first-child{border-top:1px solid #ececf0}
+  .dpp-faq-question{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 0;background:none;border:none;cursor:pointer;text-align:left;font-family:Poppins,sans-serif;font-size:15px;font-weight:600;color:#312C70;line-height:1.4;gap:16px}
+  .dpp-faq-question:hover{color:#e25aab}
+  .dpp-faq-icon{width:28px;height:28px;border-radius:50%;background:#EDEAFC;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s ease}
+  .dpp-faq-icon svg{width:12px;height:12px;stroke:#5C4BA3;stroke-width:2.5;transition:transform .3s ease}
+  .dpp-faq-item.active .dpp-faq-icon{background:#312C70}
+  .dpp-faq-item.active .dpp-faq-icon svg{stroke:#fff;transform:rotate(180deg)}
+  .dpp-faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+  .dpp-faq-answer-inner{padding:0 0 20px;font-size:14px;color:#666;line-height:1.7}
+  .dpp-faq-item.active .dpp-faq-answer{max-height:300px}
+
+  @media(max-width:768px){
+    .dpp-hero{padding:40px 20px}
+    .dpp-hero h1{font-size:28px}
+    .dpp-grid{padding:0 16px;gap:12px}
+    .dpp-card{width:100%}
+    .dpp-info-bar{padding:20px 16px;margin:32px 16px 0;flex-direction:column}
+    .dpp-cta-banner{margin:32px 16px;padding:28px 20px}
+    .dpp-tabs{flex-direction:column}
+    .dpp-faq{padding:0 16px}
+    .dpp-faq-question{font-size:14px}
+  }
+</style>
+
+<div class="dpp-wrapper">
+
+  <!-- HERO -->
+  <div class="dpp-hero">
+    <span class="dpp-hero-badge">Device Payment Program</span>
+    <h1>Pay over time. Interest free.</h1>
+    <p>Spread the cost of your business phones, routers, and accessories over 12 months with zero interest. Stay connected with the latest technology without the upfront cost.</p>
+    <div class="dpp-hero-features">
+      <div class="dpp-hero-feature"><span class="check"><img src="http://ucom.com.au/wp-content/uploads/2026/03/Vector-125.svg" alt=""></span> 0% Interest</div>
+      <div class="dpp-hero-feature"><span class="check"><img src="http://ucom.com.au/wp-content/uploads/2026/03/Vector-125.svg" alt=""></span> 12 Monthly Payments</div>
+      <div class="dpp-hero-feature"><span class="check"><img src="http://ucom.com.au/wp-content/uploads/2026/03/Vector-125.svg" alt=""></span> Added to your monthly bill</div>
+      <div class="dpp-hero-feature"><span class="check"><img src="http://ucom.com.au/wp-content/uploads/2026/03/Vector-125.svg" alt=""></span> You own the device</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  {% assign has_phones = false %}
+  {% assign has_routers = false %}
+  {% for product in collection.products %}
+    {% if product.tags contains 'dpp-desk-phone' or product.tags contains 'dpp-cordless' or product.tags contains 'dpp-headset' or product.tags contains 'dpp-accessory' %}
+      {% assign has_phones = true %}
+    {% endif %}
+    {% if product.tags contains 'dpp-router' or product.tags contains 'dpp-router-accessory' %}
+      {% assign has_routers = true %}
+    {% endif %}
+  {% endfor %}
+
+  {% if has_phones and has_routers %}
+  <div class="dpp-tabs">
+    <div class="dpp-tab active" onclick="showDppTab('phones')">Business Phones</div>
+    <div class="dpp-tab" onclick="showDppTab('routers')"><span style="text-transform:lowercase">nbn</span>® Routers</div>  </div>
+  {% endif %}
+
+  <!-- ==================== PHONES TAB ==================== -->
+  <div class="dpp-tab-content active" id="dpp-tab-phones">
+
+    <div class="dpp-info-bar">
+      <div class="dpp-info-item"><div class="dpp-info-icon">1</div><div class="dpp-info-text"><h4>Chat with us</h4><p>Speak with a UCOM Business Consultant about the devices you need.</p></div></div>
+      <div class="dpp-info-item"><div class="dpp-info-icon">2</div><div class="dpp-info-text"><h4>Get approved</h4><p>Quick credit check as part of your service sign-up. Simple and fast.</p></div></div>
+      <div class="dpp-info-item"><div class="dpp-info-icon">3</div><div class="dpp-info-text"><h4>Pay monthly</h4><p>Your device cost is split into 12 equal payments on your UCOM bill.</p></div></div>
+    </div>
+
+    {% comment %} DESK PHONES {% endcomment %}
+    {% assign desk_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-desk-phone' %}{% assign desk_count = desk_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if desk_count > 0 %}
+    <div class="dpp-section-header"><h2>Desk IP Phones</h2><p>Find the right desk phone for every role in your business</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-desk-phone' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% comment %} CORDLESS {% endcomment %}
+    {% assign cordless_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-cordless' %}{% assign cordless_count = cordless_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if cordless_count > 0 %}
+    <div class="dpp-section-header"><h2>Cordless IP Phones</h2><p>DECT and WiFi options for teams on the move</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-cordless' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% comment %} HEADSETS {% endcomment %}
+    {% assign headset_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-headset' %}{% assign headset_count = headset_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if headset_count > 0 %}
+    <div class="dpp-section-header"><h2>Headsets</h2><p>Wired and wireless options for clear hands-free calling</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-headset' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% comment %} ACCESSORIES {% endcomment %}
+    {% assign acc_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-accessory' %}{% assign acc_count = acc_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if acc_count > 0 %}
+    <div class="dpp-section-header"><h2>Accessories</h2><p>Essential add-ons for your devices</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-accessory' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- ==================== ROUTERS TAB ==================== -->
+  <div class="dpp-tab-content" id="dpp-tab-routers">
+
+    <div class="dpp-info-bar">
+      <div class="dpp-info-item"><div class="dpp-info-icon">1</div><div class="dpp-info-text"><h4>Chat with us</h4><p>Speak with a UCOM Business Consultant about your NBN connection needs.</p></div></div>
+      <div class="dpp-info-item"><div class="dpp-info-icon">2</div><div class="dpp-info-text"><h4>Get approved</h4><p>Quick credit check as part of your NBN service sign-up. Simple and fast.</p></div></div>
+      <div class="dpp-info-item"><div class="dpp-info-icon">3</div><div class="dpp-info-text"><h4>Pay monthly</h4><p>Your router cost is split into 12 equal payments on your UCOM bill.</p></div></div>
+    </div>
+
+    {% assign router_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-router' %}{% assign router_count = router_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if router_count > 0 %}
+    <div class="dpp-section-header"><h2>NBN Routers</h2><p>Reliable business-grade routers with 4G backup for your UCOM NBN connection</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-router' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% comment %} ROUTER ACCESSORIES {% endcomment %}
+    {% assign racc_count = 0 %}
+    {% for product in collection.products %}
+      {% if product.tags contains 'dpp-router-accessory' %}{% assign racc_count = racc_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if racc_count > 0 %}
+    <div class="dpp-section-header"><h2>Router Add-Ons</h2><p>Extend your coverage and boost your network performance</p></div>
+    <div class="dpp-grid">
+      {% for product in collection.products %}
+        {% if product.tags contains 'dpp-router-accessory' %}
+          {% assign monthly = product.price | times: 1.0 | divided_by: 1200.0 %}
+          <div class="dpp-card">
+            <div class="dpp-card-img">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="dpp-card-body">
+              <div class="dpp-card-tags">
+                {% for tag in product.tags %}
+                  {% unless tag contains 'dpp-' %}
+                    <span class="dpp-tag">{{ tag }}</span>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+              <h3 class="dpp-card-title">{{ product.title }}</h3>
+              <p class="dpp-card-desc">{{ product.metafields.custom.dpp_description | default: product.description | strip_html | truncate: 120 }}</p>
+              <div class="dpp-card-price">
+                <div class="dpp-card-monthly">${{ monthly | round: 2 }} <span>/month</span></div>
+                <div class="dpp-card-total">Total: {{ product.price | money }} over 12 months</div>
+              </div>
+              <a href="{{ FORM_URL }}" class="dpp-btn-enquire">Enquire Now</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="dpp-cta-banner">
+    <h3>Ready to get started?</h3>
+    <p>Speak with a UCOM Business Consultant about the Device Payment Program.</p>
+    <a href="{{ FORM_URL }}" class="dpp-cta-btn">Enquire Now <span class="arrow"><svg style="width:22px;height:22px;display:block;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></a>
+  </div>
+
+  <!-- FAQ -->
+  <div class="dpp-faq">
+    <div class="dpp-faq-header">
+      <h2>Frequently Asked Questions</h2>
+      <p>Everything you need to know about the Device Payment Program</p>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        What is the UCOM Device Payment Program (DPP)?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">The UCOM Device Payment Program (DPP) allows you to pay off your IP Phone or Modem/Router over 12 months when you use it with an approved Service Plan. It's interest free and there is no need to pay the full amount upfront — a great way to ease the cashflow.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        How do I apply for the DPP?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">To become an approved DPP Customer you will need to meet our credit and eligibility requirements. It's a simple process done at the time you apply for one of our eligible services. Your UCOM Business Consultant will assist you during the signup process.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        What is a Device Payment Contract (DPC)?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">A UCOM Device Payment Contract (DPC) is a 12 month repayment contract attached to each individual device purchased as part of the Device Payment Program (DPP). The DPC forms part of the Service Application when you sign up with UCOM.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        How do I make the monthly DPC payments?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">The DPC repayments will be included in your monthly bill for your services and are payable on the same due date.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        What devices can I purchase with DPP?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">Just visit the ucom.shop and select your device from a list of DPP approved devices. A UCOM Business Consultant will then include the device in your UCOM Service Application.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        How much will I end up paying on a DPC?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">You will end up paying the RRP of the device as published on ucom.shop. There is zero interest — the total you pay over 12 months equals the listed price.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        What happens to my DPC if I cancel or disconnect my service plan?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">If you cancel your service plan or your plan is disconnected, you will need to pay out the remaining balance of your Device Payment Contract.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        What happens to my DPC if I change my service plan?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">DPC instalments are fixed and don't change if you move to another service plan.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        Can I purchase multiple devices on one plan?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">You can only purchase one device per single service plan. If your service plan incorporates multiple individual services (e.g. a UCOM PBX service plan for 3+ cloud PBX extensions), then you can purchase a device for every cloud PBX extension.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        Can I upgrade my device during the DPC term?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">You can upgrade your device by paying out your existing DPC and entering into a new DPC for your new device.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        Can I change the DPC monthly instalment amounts?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">Unfortunately you can't. The monthly repayments are set by dividing the total purchase amount by 12 months.</div></div>
+    </div>
+
+    <div class="dpp-faq-item">
+      <button class="dpp-faq-question" onclick="toggleFaq(this)">
+        How do I cancel the DPC?
+        <span class="dpp-faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </button>
+      <div class="dpp-faq-answer"><div class="dpp-faq-answer-inner">You can cancel the DPC by contacting our Customer Care team. You will then be required to complete a DPC cancellation form. The balance of your DPC Total Amount will be included on your next UCOM invoice which must be paid in order to complete the cancellation.</div></div>
+    </div>
+  </div>
+
+  <div class="dpp-terms">
+    Device Payment Program is available to approved customers on eligible UCOM service plans.
+    <a href="/pages/dpp-terms">View full terms and conditions</a>.
+  </div>
+
+</div>
+
+<script>
+function showDppTab(tab) {
+  document.querySelectorAll('.dpp-tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.dpp-tab').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('dpp-tab-' + tab).classList.add('active');
+  if (tab === 'phones') { document.querySelectorAll('.dpp-tab')[0].classList.add('active'); }
+  else { document.querySelectorAll('.dpp-tab')[1].classList.add('active'); }
+  window.scrollTo({ top: document.querySelector('.dpp-tabs').offsetTop - 20, behavior: 'smooth' });
+}
+
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  var isActive = item.classList.contains('active');
+  document.querySelectorAll('.dpp-faq-item').forEach(function(el) { el.classList.remove('active'); });
+  if (!isActive) { item.classList.add('active'); }
+}
+</script>
+
+{% schema %}
+{
+  "name": "DPP Collection",
+  "tag": "section",
+  "class": "dpp-section",
+  "settings": [
+    {
+      "type": "url",
+      "id": "enquiry_form_url",
+      "label": "Enquiry Form URL",
+      "info": "Link for all Enquire Now buttons"
+    }
+  ]
+}
+{% endschema %}
